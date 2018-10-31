@@ -15,8 +15,6 @@ public interface ControleJogo {
 
 	Icon getPeca(int col, int row) throws Exception;
 
-	void run() throws Exception;
-
 	void addObservador(Observador obs);
 
 	void iniciarJogo();
@@ -26,5 +24,11 @@ public interface ControleJogo {
 	int getDimencao();
 
 	void setDimencao(int dimencao);
+
+	void click(int rowAtPoint, int columnAtPoint);
+
+	void voltarJogada();
+
+	String getJogador();
 
 }
