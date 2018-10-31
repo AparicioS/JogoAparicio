@@ -15,18 +15,16 @@ public interface ControleJogo {
 
 	Icon getPeca(int col, int row) throws Exception;
 
-	void pressTecla(int keyCode) throws Exception;
-
 	void run() throws Exception;
-
-	void setTipoHeroi(String tipoHeroi) throws Exception;
-
-	void criarHeroi() throws Exception;
 
 	void addObservador(Observador obs);
 
-	void clic(MouseEvent e);
+	void iniciarJogo();
 
-	void criarHeroi(int l, int c) throws Exception;
+	void click(MouseEvent e);
+
+	int getDimencao();
+
+	void setDimencao(int dimencao);
 
 }

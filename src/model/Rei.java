@@ -10,7 +10,7 @@ import javax.swing.ImageIcon;
 public class Rei extends PecaJogador{
 
 	public Rei() {
-		super(new ImageIcon("imagens/reibt.png"));
+		super(new ImageIcon("src/pecas/reibt.png"));
 		// TODO Auto-generated constructor stub
 	}
 

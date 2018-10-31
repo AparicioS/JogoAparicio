@@ -8,7 +8,7 @@ import javax.swing.ImageIcon;
 public class Refugio extends Peca{
 
 	public Refugio() {
-		super(new ImageIcon("imagens/campo.png"));
+		super(new ImageIcon("src/pecas/refugio.png"));		
 		// TODO Auto-generated constructor stub
 	}
 

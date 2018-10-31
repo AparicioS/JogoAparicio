@@ -10,7 +10,7 @@ import javax.swing.ImageIcon;
 public class Defensor extends PecaJogador{
 
 	public Defensor() {
-		super(new ImageIcon("imagens/reibt.png"));
+		super(new ImageIcon("src/pecas/defensorb.png"));
 		// TODO Auto-generated constructor stub
 	}
 

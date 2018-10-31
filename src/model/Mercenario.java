@@ -1,6 +1,7 @@
 package model;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
 /**
 *
@@ -8,8 +9,8 @@ import javax.swing.Icon;
 */
 public class Mercenario extends PecaJogador{
 
-	public Mercenario(Icon imagem) {
-		super(imagem);
+	public Mercenario() {
+		super(new ImageIcon("src/pecas/mercenario.png"));
 		// TODO Auto-generated constructor stub
 	}
 

@@ -1,4 +1,5 @@
-package view;import static java.awt.BorderLayout.CENTER;
+package view;
+import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.SOUTH;
 import static java.awt.BorderLayout.WEST;
 
@@ -24,9 +25,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import control.ControleJogo;
-import control.ControleJogoImpl;
-import control.Observador;
+import controll.ControleJogo;
+import controll.ControleJogoImpl;
+import controll.Observador;
 /**
 *
 * @author aparicio da silva
@@ -36,18 +37,18 @@ public class Tela extends JFrame implements Observador {
 
 	private static final long serialVersionUID = 1L;
 	
-	class HeroiTableModel extends AbstractTableModel {
+	class JogoTableModel extends AbstractTableModel {
 
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		public int getColumnCount() {
-			return 7;
+			return controle.getDimencao();
 		}
 
 		@Override
 		public int getRowCount() {
-			return 7;
+			return controle.getDimencao();
 		}
 
 		@Override
@@ -62,7 +63,7 @@ public class Tela extends JFrame implements Observador {
 		
 	}
 	
-	class HeroiRenderer extends DefaultTableCellRenderer {
+	class JogoRenderer extends DefaultTableCellRenderer {
 	
 		private static final long serialVersionUID = 1L;
 
@@ -86,7 +87,7 @@ public class Tela extends JFrame implements Observador {
 		this.controle.addObservador(this);
 	
 		
-		setTitle("Titulo\u00F3i");
+		setTitle("jogo");
 		setSize(305, 370);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
@@ -101,43 +102,32 @@ public class Tela extends JFrame implements Observador {
 
 		// criar o tabuleiro e seus componentes
 		tabuleiro = new JTable();
-		tabuleiro.setModel(new HeroiTableModel());
+		tabuleiro.setModel(new JogoTableModel());
 		for (int x=0;x<tabuleiro.getColumnModel().getColumnCount();x++) {
-			tabuleiro.getColumnModel().getColumn(x).setWidth(80);
-			tabuleiro.getColumnModel().getColumn(x).setMinWidth(80);
-			tabuleiro.getColumnModel().getColumn(x).setMaxWidth(80);
+			tabuleiro.getColumnModel().getColumn(x).setWidth(62);
+			tabuleiro.getColumnModel().getColumn(x).setMinWidth(62);
+			tabuleiro.getColumnModel().getColumn(x).setMaxWidth(62);
 		}
-		tabuleiro.setRowHeight(82);
+		tabuleiro.setRowHeight(62);
 		tabuleiro.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		tabuleiro.setShowGrid(false);
+		tabuleiro.setShowGrid(false);//bordas da tabela 
 		tabuleiro.setIntercellSpacing(new Dimension(0, 0));
-		tabuleiro.setDefaultRenderer(Object.class, new HeroiRenderer());
-		tabuleiro.addMouseListener(new MouseAdapter(){	
+		
+		tabuleiro.setDefaultRenderer(Object.class, new JogoRenderer());
+		tabuleiro.addMouseListener(new MouseAdapter(){		
+			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				
+				// metodo de click do mouse
 				int lin = tabuleiro.rowAtPoint(e.getPoint());
 				int col = tabuleiro.columnAtPoint(e.getPoint());
-				clicar(col,lin);
+				//clicar(col,lin);
 				
-			//controle.clic(e);
+			controle.click(e);
 			System.out.println(lin +"/"+col);
 			}
 		});
-		
-		tabuleiro.addKeyListener(new KeyAdapter(){
-			
-			@Override
-			public void keyReleased(KeyEvent e) {
-				try {
-					controle.pressTecla( e.getKeyCode() );
-				} catch (Exception e1) {
-					JOptionPane.showMessageDialog(null, e1.toString());
-				}
-			}
-			
-		});
-		
+
 		
 		add(tabuleiro, CENTER);
 
@@ -149,54 +139,69 @@ public class Tela extends JFrame implements Observador {
 
 		ButtonGroup bgTipoHeroi = new ButtonGroup();
 		
-		JRadioButton jrMontanha = new JRadioButton("Montanha");
-		jrMontanha.setSelected(true);
-		jrMontanha.setActionCommand("control.MovimentoHeroiMontanha");
-		jrGrupo.add(jrMontanha);
-		bgTipoHeroi.add(jrMontanha);
+		JRadioButton jrTabuleiro1 = new JRadioButton("tipo 1");
+		jrTabuleiro1.setSelected(true);
+		jrTabuleiro1.setActionCommand("control.tipo 1");
+		jrGrupo.add(jrTabuleiro1);
+		bgTipoHeroi.add(jrTabuleiro1);
 		
-		JRadioButton jrAgua = new JRadioButton("\u00C1gua");
-		jrGrupo.add(jrAgua);
-		jrAgua.setActionCommand("control.MovimentoHeroiAgua");
-		bgTipoHeroi.add(jrAgua);
+		JRadioButton jrTabuleiro2 = new JRadioButton("tipo 2");
+		jrGrupo.add(jrTabuleiro2);
+		jrTabuleiro2.setActionCommand("control.tipo 2");
+		bgTipoHeroi.add(jrTabuleiro2);
+		
+		JRadioButton jrTabuleiro3 = new JRadioButton("tipo 3");
+		jrGrupo.add(jrTabuleiro3);
+		jrTabuleiro3.setActionCommand("control.tipo 3");
+		bgTipoHeroi.add(jrTabuleiro3);
 		
 		ActionListener radioAction = new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				try {
-					controle.setTipoHeroi(event.getActionCommand());
+					//controle.setTipoHeroi(event.getActionCommand());
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, e.toString());
 				}
 			}
 		};
-		jrMontanha.addActionListener(radioAction);
-		jrAgua.addActionListener(radioAction);
-		radioAction.actionPerformed(new ActionEvent(jrMontanha, ActionEvent.ACTION_PERFORMED, jrMontanha.getActionCommand()));
+		jrTabuleiro1.addActionListener(radioAction);
+		jrTabuleiro2.addActionListener(radioAction);
+		radioAction.actionPerformed(new ActionEvent(jrTabuleiro1, ActionEvent.ACTION_PERFORMED, jrTabuleiro1.getActionCommand()));
 		
 		jp.add(jrGrupo, WEST);
 		
-		// botao criar
+		
+		// criar botao
 		JPanel jpCriar = new JPanel();
 		JButton jbCriar = new JButton("Criar");
+		
 		jbCriar.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				try {
-					controle.criarHeroi();
-					controle.run();
-					//jbCriar.setEnabled(false);
-					//jrMontanha.setEnabled(false);
-					//jrAgua.setEnabled(false);
+					jbCriar.setEnabled(false);
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, e.toString());
 				}
 			}
 		});
-		
+		JButton jbNovoJogo = new JButton("Novo Jogo");
+		jbNovoJogo.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				try {	
+					controle.iniciarJogo();
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, e.toString());
+				}
+			}
+		});
 		jpCriar.add(jbCriar);
+		jpCriar.add(jbNovoJogo);
 		jp.add(jpCriar, CENTER);
 		
 		add(jp, SOUTH);
@@ -224,12 +229,6 @@ public class Tela extends JFrame implements Observador {
 		JOptionPane.showMessageDialog(null, msgErro);
 		System.exit(0);
 	}
-	public void clicar(int linha , int coluna) {
-		try {
-		
-		controle.criarHeroi(linha, coluna);
-	} catch (Exception e) {
-		JOptionPane.showMessageDialog(null, e.toString());
-	}}
+
 
 }

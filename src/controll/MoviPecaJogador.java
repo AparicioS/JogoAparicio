@@ -21,40 +21,8 @@ public abstract class MoviPecaJogador {
 	
 	protected abstract void criarPeca();
 
-	public Heroi getPeca() {
+	public PecaJogador getPeca() {
 		return peca;
-	}
-
-	public void vaiParaCima(Peca peca) {
-		// essa comparacao entre tipos de classes nao eh o mais recomendado...
-		// vamos resolver isso no futuro com outros padroes
-		if (peca == null || peca.getClass() == Campo.class || validarOutrosTiposCasas(peca)) {
-			y--;
-		}
-	}
-
-	public void vaiParaEsquerda(Peca peca) {
-		// essa comparacao entre tipos de classes nao eh o mais recomendado...
-		// vamos resolver isso no futuro com outros padroes
-		if (peca == null || peca.getClass() == Campo.class || validarOutrosTiposCasas(peca)) {
-			x--;
-		}
-	}
-
-	public void vaiParaBaixo(Peca peca) {
-		// essa comparacao entre tipos de classes nao eh o mais recomendado...
-		// vamos resolver isso no futuro com outros padroes
-		if (peca == null || peca.getClass() == Campo.class || validarOutrosTiposCasas(peca)) {
-			y++;
-		}
-	}
-
-	public void vaiParaDireita(Peca peca) {
-		// essa comparacao entre tipos de classes nao eh o mais recomendado...
-		// vamos resolver isso no futuro com outros padroes
-		if (peca == null || peca.getClass() == Campo.class || validarOutrosTiposCasas(peca)) {
-			x++;
-		}
 	}
 
 	protected abstract boolean validarOutrosTiposCasas(Peca peca);
