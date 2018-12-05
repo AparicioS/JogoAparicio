@@ -6,6 +6,8 @@ package visitor;
 
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import model.Peca;
 
 
@@ -15,7 +17,7 @@ public class ValidaJogada implements Visitor {
 	private ArrayList<Peca> row ;
 	private ArrayList<Peca> col;
 	private boolean linha;
-	private boolean coluna ;
+	private boolean coluna ;	
 
 
 	public ValidaJogada() {
@@ -24,6 +26,7 @@ public class ValidaJogada implements Visitor {
 		this.col = new ArrayList<Peca>();
 		this.linha = true;
 		this.coluna = true;	
+		
 	}
 
 	@Override
@@ -66,11 +69,20 @@ public class ValidaJogada implements Visitor {
 		this.row.clear();
 		this.col.clear();
 		this.linha = true;
-		this.coluna = true;	
+		this.coluna = true;
+		
 	}
 	
 	@Override
 	public ArrayList<Peca> getJogada() {
+		int refugio=0;
+		for(Peca x:jogada) {
+			if(x.getTipo().equals("refugio"))
+			refugio++;
+		}
+		if(refugio == 1) {
+			JOptionPane.showMessageDialog(null,"Tuichi!");
+		}
 		return jogada;
 	}
 

@@ -223,6 +223,21 @@ public class Tela extends JFrame implements Observador {
 	}
 	public static void main(String[] args) {
 		
+		Object[] options = { "Hnefatafl", "Brandubh","Tablut" };
+		int i = JOptionPane.showOptionDialog(null,
+				"Escolha o Tabuleiro", "Saída",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+				options, options[1]);
+		if (i == 0) {			
+		//	System.exit(0);
+		}
+		if (i == 1) {			
+			System.exit(0);
+		}
+		if (i == 2) {			
+			System.exit(0);
+		}
+		
 		try {
 			Tela d = new Tela();
 			d.setVisible(true);

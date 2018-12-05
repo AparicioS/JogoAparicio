@@ -58,88 +58,20 @@ public class ControleJogoImpl implements ControleJogo {
 	// iniciar a matriz tabuleiro com as pecas campo
 	@Override
 	public void inicializar() {
-
-		//tabuleiro = new Peca[dimencao][dimencao];
-		tabuleiro.setTabuleiro(new Peca[tabuleiro.getDimencao()][tabuleiro.getDimencao()]);
-		for (int j = 0; j < tabuleiro.getDimencao(); j++) {
-			for (int i = 0; i < tabuleiro.getDimencao(); i++) {
-				tabuleiro.addPeca(j,i, novoCampo(j,i));
-
-			}
-		}
+		tabuleiro.campo();
 		notificarMudancaTabuleiro();
-	}
-
-
-	public Peca novoCampo(int row, int col) {
-		
-		if ((row== col) & ((row == 0) ||(row== tabuleiro.getDimencao()- 1))
-				|| (row == 0) & (col == tabuleiro.getDimencao()- 1) || (col == 0) & (row== tabuleiro.getDimencao()- 1)) {
-			return new Refugio(row,col);
-		}else if ((row== col) & (col == tabuleiro.getDimencao()/ 2)) {
-			return new Trono(row,col);
-		}else {
-			return new Campo(row,col);
-		}
-		
 	}
 
 	
 	// atualizar a matriz tabuleiro com os jogadores
 	@Override
 	public void iniciarJogo() {
-
-		for (int j = 0; j < tabuleiro.getDimencao(); j++) {
-			for (int i = 0; i < tabuleiro.getDimencao(); i++) {
-				if (j == 3 || i == 3) {
-					if ((j == 0 || j == 1 || j == 5 || j == 6) || (i == 0 || i == 1 || i == 5 || i == 6)) {
-						this.tabuleiro.addPeca(j,i,new Mercenario(j,i));
-					} else if ((j == 2 || j == 4) || (i == 2 || i == 4)) {
-						this.tabuleiro.addPeca(j,i,new DefensorPeao(j,i));
-					}
-					if (j == i) {
-						this.tabuleiro.addPeca(j,i,new Rei(new DefensorPeao(j,i)));
-					} 
-
-				}
-			}
-		}
+		tabuleiro.iniciarJogo();
 		tabuleiro.accept(jogadorVisit);
 		jogadalist = jogadorVisit.getJogada();
 		notificarMudancaTabuleiro();
 	}
 
-
-	
-//	// verificar as pecas do jogador da vez
-//	public boolean Jogada(int row, int col) {
-//		jogada.clear();
-//		int l=1,o=1,n=1,s=1;
-//		do {
-//			if (col+l < tabuleiro.length && this.tabuleiro[row][col].possoIr(this.tabuleiro[row][col+l])) {
-//				this.jogada.add(this.tabuleiro[row][col+l]);
-//				l++;
-//			}else
-//			if (col-o >=0 &&this.tabuleiro[row][col].possoIr(this.tabuleiro[row][col-o])) {
-//				this.jogada.add(this.tabuleiro[row][col-o]);
-//				o++;
-//			}else
-//			if (row+n < tabuleiro.length && this.tabuleiro[row][col].possoIr(this.tabuleiro[row+n][col])) {
-//				this.jogada.add(this.tabuleiro[row+n][col]);
-//				n++;
-//			}else
-//			if (row-s>=0 && this.tabuleiro[row][col].possoIr(this.tabuleiro[row-s][col])) {
-//				this.jogada.add(this.tabuleiro[row-s][col]);
-//				s++;
-//			}else break;
-//		}
-//		while(true);
-//
-//		notificarMudancaTabuleiro();
-//		System.out.println("lista" + jogada.isEmpty());
-//		return jogada.isEmpty();
-//
-//	}
 
 	@Override
 	public Icon getPeca(int row, int col) {
@@ -160,12 +92,6 @@ public class ControleJogoImpl implements ControleJogo {
 
 	}
 	
-
-//	private void notificarFimJogo(String msgErro) {
-//		for (Observador obs : observadores)
-//			obs.fimDeJogo(msgErro);
-//	}
-
 	@Override
 	public Tabuleiro getTabuleiro() {
 		return tabuleiro;
@@ -211,21 +137,17 @@ public class ControleJogoImpl implements ControleJogo {
 							}			
 				} else {	
 					/*Movimenta peca*/
-					vitoria(row,col);
+					vitoria1(row,col);
 					inv.execute(new MovimentarPeca(this.tabuleiro,row,col));
 					inv.imprimir();
 					jogador.pressionarBotao();					
-					tabuleiro.setSelecionada(tabuleiro.getPeca(row, col));
-					
+					tabuleiro.setSelecionada(tabuleiro.getPeca(row, col));					
 					/*checa possivel fim do jogo*/					
 					tabuleiro.accept(capturaReiVisit);
-					capturaVisit.getJogada();
-					
-					
+					//capturaVisit.getJogada();					
 					/*consulta captura*/					
 					capturaVisit.setSelec(jogador.getJogadorAtual().getVez());		
 					tabuleiro.accept(capturaVisit);
-					System.out.println("delete:"+capturaVisit.getJogada().isEmpty());
 					jogadalist = capturaVisit.getJogada();	
 					/*executa captura*/
 					if(!jogadalist.isEmpty()) {
@@ -234,7 +156,6 @@ public class ControleJogoImpl implements ControleJogo {
 						inv.execute(new MovimentarPeca(this.tabuleiro,x.getRow(),x.getCol()));
 						}
 					}	
-
 					/*proximo jogador*/
 					jogadorVisit.setSelec(jogador.getJogadorAtual().getVez());
 					tabuleiro.accept(jogadorVisit);
@@ -247,10 +168,10 @@ public class ControleJogoImpl implements ControleJogo {
 		for(Peca x:jogadalist)
 			System.out.println("row"+x.getRow()+"col"+x.getCol());
 		}
-	public void vitoria(int row, int col) {
+	public void vitoria1(int row, int col) {
 		if(tabuleiro.getSelecionada().getTipo().equals("Rei")&
 			tabuleiro.getPeca(row, col).minhaVez("Refugio")) {
-			JOptionPane.showMessageDialog(null,"Fim do Jogo o Rei estano Refugio Vitoria dos Defensores");
+			JOptionPane.showMessageDialog(null,"Fim do Jogo o Rei esta no Refugio Vitoria dos Defensores");
 			
 		}
 			

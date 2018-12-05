@@ -17,18 +17,48 @@ public class Tabuleiro {
 		this.selecionada = null;
 		}
 	
+	public void campo() {
+		this.tabuleiro=(new Peca[this.dimencao][this.dimencao]);
+		for (int j = 0; j < this.dimencao; j++) {
+			for (int i = 0; i < this.dimencao; i++) {
+				addPeca(j,i, novoCampo(j,i));
+
+			}
+		}
+	}
+	
+	public void iniciarJogo() {
+		
+
+		for (int j = 0; j < this.dimencao; j++) {
+			for (int i = 0; i < this.dimencao; i++) {
+				if (j == 3 || i == 3) {
+					if ((j == 0 || j == 1 || j == 5 || j == 6) || (i == 0 || i == 1 || i == 5 || i == 6)) {
+					addPeca(j,i,new Mercenario(j,i));
+					} else if ((j == 2 || j == 4) || (i == 2 || i == 4)) {
+					addPeca(j,i,new DefensorPeao(j,i));
+					}
+					if (j == i) {
+					addPeca(j,i,new Rei(new DefensorPeao(j,i)));
+					} 
+
+				}
+			}
+		}
+
+	}
+	
 	public Peca novoCampo(int i, int j) {		
-		if ((i == j) & (i == 0) || (i == j) & (i == dimencao- 1)
-				|| (i == 0) & (j == dimencao- 1) || (0 == j) & (i == dimencao- 1)) {
+		if ((i == j) & (i == 0) || (i == j) & (i == this.dimencao- 1)
+				|| (i == 0) & (j == this.dimencao- 1) || (0 == j) & (i == this.dimencao- 1)) {
 			return new Refugio(i, j);
-		}else if ((i == j) & (i == dimencao/ 2)) {
+		}else if ((i == j) & (i ==this.dimencao/ 2)) {
 			return new Trono(i,j);
 		}else {
 			return new Campo(i,j);
 		}
 		
-	}
-	
+	}	
 	
 	public boolean accept(Visitor v) {
 	v.limpar();
@@ -37,7 +67,6 @@ public class Tabuleiro {
 			v.visit(this.tabuleiro[j][i],selecionada);
 			}
 	}
-	System.out.println("lista:"+v.getJogada().isEmpty());
 	return v.getJogada().isEmpty();
 	}	
 
