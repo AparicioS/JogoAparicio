@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Icon;
+import javax.swing.JOptionPane;
 
 import model.Campo;
 import model.DefensorPeao;
@@ -16,6 +17,7 @@ import model.Tabuleiro;
 import model.Trono;
 import state.Jogador;
 import visitor.CapturaPeca;
+import visitor.CapturaRei;
 import visitor.JogadorDaVez;
 import visitor.Visitor;
 import visitor.ValidaJogada;;
@@ -30,6 +32,7 @@ public class ControleJogoImpl implements ControleJogo {
 	private Visitor jogadaVisit;
 	private Visitor jogadorVisit;
 	private Visitor capturaVisit;
+	private Visitor capturaReiVisit;
 	private List<Observador> observadores;
 	private List<Peca> jogadalist;
 	private Jogador jogador;
@@ -42,6 +45,7 @@ public class ControleJogoImpl implements ControleJogo {
 		this.jogadaVisit =  new ValidaJogada();
 		this.jogadorVisit =  new JogadorDaVez(jogador.getJogadorAtual().getVez());
 		this.capturaVisit =  new CapturaPeca(jogador.getJogadorAtual().getVez());
+		this.capturaReiVisit =  new CapturaRei(""+ tabuleiro.getDimencao());
 		this.observadores = new ArrayList<>();
 		
 		}
@@ -205,22 +209,34 @@ public class ControleJogoImpl implements ControleJogo {
 						}else {
 							this.jogadalist = jogadaVisit.getJogada();
 							}			
-				} else {								
+				} else {	
+					/*Movimenta peca*/
+					vitoria(row,col);
 					inv.execute(new MovimentarPeca(this.tabuleiro,row,col));
 					inv.imprimir();
-					jogador.pressionarBotao();
-					jogadorVisit.setSelec(jogador.getJogadorAtual().getVez());
-					
-					capturaVisit.setSelec(jogador.getJogadorAtual().getVez());//////
+					jogador.pressionarBotao();					
 					tabuleiro.setSelecionada(tabuleiro.getPeca(row, col));
+					
+					/*checa possivel fim do jogo*/					
+					tabuleiro.accept(capturaReiVisit);
+					capturaVisit.getJogada();
+					
+					
+					/*consulta captura*/					
+					capturaVisit.setSelec(jogador.getJogadorAtual().getVez());		
 					tabuleiro.accept(capturaVisit);
 					System.out.println("delete:"+capturaVisit.getJogada().isEmpty());
 					jogadalist = capturaVisit.getJogada();	
-					/*chamar metodo  de escluir*/
-					if(jogadalist.isEmpty())
+					/*executa captura*/
+					if(!jogadalist.isEmpty()) {
 					for(Peca x:jogadalist) {
-					System.out.println("delete row"+x.getRow()+"col"+x.getCol());
-					}
+						tabuleiro.setSelecionada(x);
+						inv.execute(new MovimentarPeca(this.tabuleiro,x.getRow(),x.getCol()));
+						}
+					}	
+
+					/*proximo jogador*/
+					jogadorVisit.setSelec(jogador.getJogadorAtual().getVez());
 					tabuleiro.accept(jogadorVisit);
 					jogadalist = jogadorVisit.getJogada();				
 					tabuleiro.setSelecionada(null);			
@@ -231,6 +247,15 @@ public class ControleJogoImpl implements ControleJogo {
 		for(Peca x:jogadalist)
 			System.out.println("row"+x.getRow()+"col"+x.getCol());
 		}
+	public void vitoria(int row, int col) {
+		if(tabuleiro.getSelecionada().getTipo().equals("Rei")&
+			tabuleiro.getPeca(row, col).minhaVez("Refugio")) {
+			JOptionPane.showMessageDialog(null,"Fim do Jogo o Rei estano Refugio Vitoria dos Defensores");
+			
+		}
+			
+		
+	}
 	
 	
 

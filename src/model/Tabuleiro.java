@@ -39,7 +39,7 @@ public class Tabuleiro {
 	}
 	System.out.println("lista:"+v.getJogada().isEmpty());
 	return v.getJogada().isEmpty();
-	}		
+	}	
 
 	public void addPeca(int row,int col,Peca peca) {
 		this.tabuleiro[row][col] = peca;

@@ -33,26 +33,28 @@ public class ValidaJogada implements Visitor {
 				if (selecionada.possoIr(peca)) {
 					this.jogada.add(peca);
 					this.row.add(peca);			
-				}else if(peca.getCol()<selecionada.getCol()){
+				}else if((!peca.minhaVez("Trono"))) {
+					if(peca.getCol()<selecionada.getCol()){
 					   for(Peca x:this.row) {
 					   this.jogada.remove(x);				
 					   		}
 					   this.row.clear();
 				   	}else if(peca.getCol()!=selecionada.getCol()) 
 					   this.linha = false;			
-				   		
+				}		
 		}else if(peca.getCol()==selecionada.getCol()& coluna) {	
 			if (selecionada.possoIr(peca)) {
 				this.jogada.add(peca);
 				this.col.add(peca);
-			}else if(peca.getRow()<selecionada.getRow()){
+			}else if((!peca.minhaVez("Trono"))) {
+				if(peca.getRow()<selecionada.getRow()){
 				   for(Peca x:this.col) {
 					   this.jogada.remove(x);				
 				   		}
 				   this.col.clear();
 		   	}else if(peca.getRow()!=selecionada.getRow()) 
 			   this.coluna = false;
-		
+			}
 		}
 		
 		

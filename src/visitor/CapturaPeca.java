@@ -30,33 +30,35 @@ public class CapturaPeca implements Visitor {
 
 	@Override
 	public void visit(Peca peca, Peca selecionada) {
+		
 		boolean cerca = (peca.minhaVez(selecionada.getTipo())||peca.minhaVez("Trono")||peca.minhaVez("Refugio"));
 		if(peca.getRow()==selecionada.getRow()) {
-			if(peca.getCol()==(selecionada.getCol()-2)& cerca)
-				L=true;				
-			if(peca.getCol()==(selecionada.getCol()-1) & peca.minhaVez(selec)&L)
-				this.jogada.add(peca);
-			if(peca.getCol()==selecionada.getCol()+1 & peca.minhaVez(selec))
+			if(peca.getCol()==(selecionada.getCol()-2)& cerca) {
+				L=true;		}		
+			if(peca.getCol()==(selecionada.getCol()-1) & peca.minhaVez(selec)& L &(!peca.getTipo().equals("Rei"))) {
+				this.jogada.add(peca);}
+			if(peca.getCol()==selecionada.getCol()+1 & peca.minhaVez(selec)&(!peca.getTipo().equals("Rei"))) {
 				temp=peca;
-				O=true;		
-			if(peca.getCol()==selecionada.getCol()+2 & cerca & O)
-				this.jogada.add(temp);		
+				O=true;		}
+			if(peca.getCol()==selecionada.getCol()+2 & cerca & O) {
+				this.jogada.add(temp);		}
 		
 			
 			}
 		if(peca.getCol()==selecionada.getCol()) {
-			if(peca.getRow()==(selecionada.getRow()-2)& cerca )
-				N=true;				
-			if(peca.getRow()==(selecionada.getRow()-1)&peca.minhaVez(selec)&N)
-				this.jogada.add(peca);
-			if(peca.getRow()==selecionada.getRow()+1 & peca.minhaVez(selec))
+			if(peca.getRow()==(selecionada.getRow()-2)& cerca ) {
+				N=true;		}		
+			if(peca.getRow()==(selecionada.getRow()-1)&peca.minhaVez(selec)& N &(!peca.getTipo().equals("Rei"))) {
+				this.jogada.add(peca);}
+			if(peca.getRow()==selecionada.getRow()+1 & peca.minhaVez(selec)&(!peca.getTipo().equals("Rei"))) {
 				temp=peca;
-				S=true;		
-			if(peca.getRow()==selecionada.getRow()+2& cerca &S)
-				this.jogada.add(temp);		
+				S=true;		}
+			if(peca.getRow()==selecionada.getRow()+2& cerca &S) {
+				this.jogada.add(temp);		}
 		
 			
 			}	
+		
 	}			
 	
 	@Override
