@@ -9,9 +9,19 @@ import javax.swing.ImageIcon;
 */
 public class Mercenario extends PecaJogador{
 
-	public Mercenario() {
-		super(new ImageIcon("src/pecas/mercenario.png"));
-		// TODO Auto-generated constructor stub
+	public Mercenario( int row, int col) {
+		super("Mercenario", row, col);
+
+	}
+
+	@Override
+	public boolean minhaVez(String vez) {
+		return vez.equals("Mercenario");
+	}
+
+	@Override
+	public boolean possoIr(Peca possicao) {	
+		return possicao.minhaVez("Campo");
 	}
 
 }

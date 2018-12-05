@@ -1,43 +1,40 @@
 package controll;
 
-import model.Peca;
+import model.Tabuleiro;
 
 public  class MovimentarPeca implements Command{
-	protected Peca[][] tabuleiro;
-	protected int[] atual;
-	protected int[] anterior;
+	protected Tabuleiro tabuleiro;
+	protected int row;
+	protected int col;
+
+
 	
-	public MovimentarPeca(Peca[][] tabuleiro,int[] atual,int[] anterior) {
+	public MovimentarPeca(Tabuleiro tabuleiro,int row,int col) {
 		this.tabuleiro =tabuleiro;
-		this.atual = atual;
-		this.anterior = anterior;
+		this.row =row;
+		this.col =col;
+		
 		
 	}
 
 	@Override
 	public void execute() {
-		Peca aux = tabuleiro[atual[0]][atual[1]];
-		this.tabuleiro[atual[0]][atual[1]]=tabuleiro[anterior[0]][anterior[1]];
-		this.tabuleiro[anterior[0]][anterior[1]]= aux;
-		// TODO Auto-generated method stub
-		
+		int row=this.tabuleiro.getSelecionada().getRow();
+		int col=this.tabuleiro.getSelecionada().getCol();
+		this.tabuleiro.getSelecionada().setRow(this.row);
+		this.tabuleiro.getSelecionada().setCol(this.col);					
+		this.tabuleiro.addPeca(this.row,this.col,this.tabuleiro.getSelecionada());
+		this.tabuleiro.addPeca(row,col,this.tabuleiro.novoCampo(row,col));
+				
 	}
 
 	@Override
 	public void undo() {
-		Peca aux = tabuleiro[atual[0]][atual[1]];
-		this.tabuleiro[atual[0]][atual[1]]=tabuleiro[anterior[0]][anterior[1]];
-		this.tabuleiro[anterior[0]][anterior[1]]= aux;	
-		// TODO Auto-generated method stub
-		
+	
 	}
 
 	@Override
 	public void redo() {
-		Peca aux = tabuleiro[atual[0]][atual[1]];
-		this.tabuleiro[atual[0]][atual[1]]=tabuleiro[anterior[0]][anterior[1]];
-		this.tabuleiro[anterior[0]][anterior[1]]= aux;	
-		// TODO Auto-generated method stub
 		
 	}
 

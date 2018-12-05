@@ -4,6 +4,9 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.Icon;
 
+import model.Tabuleiro;
+import state.Jogador;
+
 /**
 *
 * @author aparicio da silva
@@ -21,14 +24,13 @@ public interface ControleJogo {
 
 	void click(MouseEvent e);
 
-	int getDimencao();
-
-	void setDimencao(int dimencao);
-
 	void click(int rowAtPoint, int columnAtPoint);
 
 	void voltarJogada();
 
-	String getJogador();
+	void refazerJogada();
+	Tabuleiro getTabuleiro();
+
+	Jogador getJogador();
 
 }

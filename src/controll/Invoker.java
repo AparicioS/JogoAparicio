@@ -3,7 +3,6 @@ package controll;
 import java.util.ArrayList;
 import java.util.List;
 
-import controle.Command;
 
 public class Invoker {
 
@@ -17,18 +16,18 @@ public class Invoker {
 	}
 
 	public void undo() {
-
-		Command comm = todos.remove(todos.size() - 1);
-		comm.undo();
-		undo.add(comm);
-
-	}
-
-	public void redo() {
 		if(!todos.isEmpty()) {
 			Command comm = todos.remove(todos.size()-1);
 			comm.undo();
 			undo.add(comm);}
+
+	}
+
+	public void redo() {
+		if(!undo.isEmpty()) {
+			Command comm = undo.remove(undo.size()-1);
+			comm.redo();
+			todos.add(comm);}
 		
 	}
 
@@ -38,7 +37,11 @@ public class Invoker {
 		for (Command comm : todos) {
 			System.out.println(" " + comm);
 		}
+	}		
+		public boolean existe() {
+			return !this.todos.isEmpty();
+		}
 
-	}
+
 
 }

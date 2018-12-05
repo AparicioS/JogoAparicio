@@ -44,12 +44,12 @@ public class Tela extends JFrame implements Observador {
 
 		@Override
 		public int getColumnCount() {
-			return controle.getDimencao();
+			return controle.getTabuleiro().getDimencao();
 		}
 
 		@Override
 		public int getRowCount() {
-			return controle.getDimencao();
+			return controle.getTabuleiro().getDimencao();
 		}
 
 		@Override
@@ -72,9 +72,7 @@ public class Tela extends JFrame implements Observador {
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean isSelected, boolean hasFocus, int row,
 				int column) {
-
 			setIcon((ImageIcon) value);
-			
 			return this;
 		}
 
@@ -82,6 +80,9 @@ public class Tela extends JFrame implements Observador {
 
 	private ControleJogo controle;
 	private JTable tabuleiro;
+	private JLabel jogador;
+	private JPanel painel;
+
 	
 	public Tela() throws Exception {
 		this.controle = new ControleJogoImpl();
@@ -102,6 +103,8 @@ public class Tela extends JFrame implements Observador {
 	private void initComponents() {
 
 		// criar o tabuleiro e seus componentes
+		painel = new JPanel();
+		painel.setLayout(new BorderLayout());
 		tabuleiro = new JTable();
 		tabuleiro.setModel(new JogoTableModel());
 		for (int x=0;x<tabuleiro.getColumnModel().getColumnCount();x++) {
@@ -116,17 +119,15 @@ public class Tela extends JFrame implements Observador {
 		tabuleiro.setDefaultRenderer(Object.class, new JogoRenderer());
 		
 		
-		tabuleiro.addMouseListener(new MouseAdapter(){		
-			
+		tabuleiro.addMouseListener(new MouseAdapter(){				
 			@Override
 			public void mouseClicked(MouseEvent e) {
 			controle.click((int)tabuleiro.rowAtPoint(e.getPoint()),(int)tabuleiro.columnAtPoint(e.getPoint()));
-			System.out.println(tabuleiro.rowAtPoint(e.getPoint()) +"/"+tabuleiro.columnAtPoint(e.getPoint()));
 			}
 		});
 
-		
-		add(tabuleiro, CENTER);
+
+		painel.add(tabuleiro, CENTER);
 		JPanel jp = new JPanel();
 		jp.setLayout(new BorderLayout());		
 	
@@ -134,38 +135,42 @@ public class Tela extends JFrame implements Observador {
 		// criar os botoes de radio
 		JPanel jrGrupo = new JPanel();
 
-		ButtonGroup bgTipoHeroi = new ButtonGroup();
+		ButtonGroup bgTipo = new ButtonGroup();
 		
 		JRadioButton jrTabuleiro1 = new JRadioButton("Hnefatafl");
 
 		jrTabuleiro1.setActionCommand("11");
 		jrGrupo.add(jrTabuleiro1);
-		bgTipoHeroi.add(jrTabuleiro1);		
+		bgTipo.add(jrTabuleiro1);		
 		JRadioButton jrTabuleiro2 = new JRadioButton("Tablut");
 		jrGrupo.add(jrTabuleiro2);
 		jrTabuleiro2.setActionCommand("9");
-		bgTipoHeroi.add(jrTabuleiro2);
+		bgTipo.add(jrTabuleiro2);
 		
 		JRadioButton jrTabuleiro3 = new JRadioButton("Brandubh");
 		jrTabuleiro3.setSelected(true);
 		jrGrupo.add(jrTabuleiro3);
 		jrTabuleiro3.setActionCommand("7");
-		bgTipoHeroi.add(jrTabuleiro3);
+		bgTipo.add(jrTabuleiro3);
 		
+		jrTabuleiro1.setEnabled(false);
+		jrTabuleiro2.setEnabled(false);
+		jrTabuleiro3.setEnabled(true);
 		ActionListener radioAction = new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				try {
+				try {					
 					//controle.setDimencao(Integer.parseInt(event.getActionCommand()));
 				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null, e.toString());
+					JOptionPane.showMessageDialog(null, event.getActionCommand());
 				}
 			}
 		};
 		jrTabuleiro1.addActionListener(radioAction);
 		jrTabuleiro2.addActionListener(radioAction);
-		radioAction.actionPerformed(new ActionEvent(jrTabuleiro1, ActionEvent.ACTION_PERFORMED, jrTabuleiro1.getActionCommand()));
+		jrTabuleiro3.addActionListener(radioAction);
+		radioAction.actionPerformed(new ActionEvent(jrTabuleiro1, ActionEvent.ACTION_PERFORMED, jrTabuleiro3.getActionCommand()));
 		
 		jp.add(jrGrupo, WEST);
 		
@@ -190,7 +195,9 @@ public class Tela extends JFrame implements Observador {
 
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				try {	
+				try {
+					
+					controle.inicializar();
 					controle.iniciarJogo();
 					jbNovoJogo.setEnabled(false);
 					jrTabuleiro1.setEnabled(false);
@@ -205,16 +212,17 @@ public class Tela extends JFrame implements Observador {
 		jpCriar.add(jbNovoJogo);
 		jp.add(jpCriar, CENTER);
 		
-		JLabel jogador = new JLabel();
-		add(jogador, NORTH);
+	jogador = new JLabel();
+		painel.add(jogador, NORTH);
 
-		add(jp, SOUTH);
-		jogador.setText("Proximo Jogador :"+ controle.getJogador());
+
+		painel.add(jp, SOUTH);
+		jogador.setText("Proximo Jogador :"+ controle.getJogador().getJogadorAtual().getVez());
 		
-		
+		add(painel,CENTER);
 	}
-
 	public static void main(String[] args) {
+		
 		try {
 			Tela d = new Tela();
 			d.setVisible(true);
@@ -227,13 +235,18 @@ public class Tela extends JFrame implements Observador {
 	@Override
 	public void mudouTabuleiro() {
 		tabuleiro.repaint();
+		jogador.setText("Proximo Jogador :"+ controle.getJogador().getJogadorAtual().getVez());
+		jogador.repaint();
+		painel.repaint();
+		
+		
 	}
 
-	@Override
-	public void fimDeJogo(String msgErro) {
-		JOptionPane.showMessageDialog(null, msgErro);
-		System.exit(0);
-	}
+//	@Override
+//	public void fimDeJogo(String msgErro) {
+//		JOptionPane.showMessageDialog(null, msgErro);
+//		System.exit(0);
+//	}
 
 
 }

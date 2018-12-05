@@ -7,12 +7,18 @@ import java.util.List;
 import javax.swing.Icon;
 
 import model.Campo;
-import model.Defensor;
+import model.DefensorPeao;
 import model.Mercenario;
 import model.Peca;
 import model.Refugio;
 import model.Rei;
+import model.Tabuleiro;
 import model.Trono;
+import state.Jogador;
+import visitor.CapturaPeca;
+import visitor.JogadorDaVez;
+import visitor.Visitor;
+import visitor.ValidaJogada;;
 
 /**
  *
@@ -20,13 +26,25 @@ import model.Trono;
  */
 public class ControleJogoImpl implements ControleJogo {
 	private Invoker inv = new Invoker();
-	private Peca[][] tabuleiro;
-	private List<Peca> jogada = new ArrayList<Peca>();
-	private int dimencao = 7;
-	private String jogador ="Defensor";
-	private int lin, coluna;
-
-	private List<Observador> observadores = new ArrayList<>();
+	private Tabuleiro tabuleiro;
+	private Visitor jogadaVisit;
+	private Visitor jogadorVisit;
+	private Visitor capturaVisit;
+	private List<Observador> observadores;
+	private List<Peca> jogadalist;
+	private Jogador jogador;
+	
+	
+	public  ControleJogoImpl(){
+		this.jogador =new Jogador();
+		this.inv = new Invoker();
+		this.tabuleiro = new Tabuleiro();
+		this.jogadaVisit =  new ValidaJogada();
+		this.jogadorVisit =  new JogadorDaVez(jogador.getJogadorAtual().getVez());
+		this.capturaVisit =  new CapturaPeca(jogador.getJogadorAtual().getVez());
+		this.observadores = new ArrayList<>();
+		
+		}
 
 	@Override
 	public void addObservador(Observador obs) {
@@ -37,111 +55,99 @@ public class ControleJogoImpl implements ControleJogo {
 	@Override
 	public void inicializar() {
 
-		tabuleiro = new Peca[dimencao][dimencao];
-		for (int j = 0; j < tabuleiro.length; j++) {
-			for (int i = 0; i < tabuleiro.length; i++) {
-				tabuleiro[j][i] = new Campo();
-				if ((i == j) & (i == 0) || (i == j) & (i == tabuleiro.length - 1)
-						|| (i == 0) & (j == tabuleiro.length - 1) || (0 == j) & (i == tabuleiro.length - 1)) {
-					tabuleiro[j][i] = new Refugio();
-				}
-				if ((i == j) & (i == tabuleiro.length / 2)) {
-					tabuleiro[j][i] = new Trono();
-				}
+		//tabuleiro = new Peca[dimencao][dimencao];
+		tabuleiro.setTabuleiro(new Peca[tabuleiro.getDimencao()][tabuleiro.getDimencao()]);
+		for (int j = 0; j < tabuleiro.getDimencao(); j++) {
+			for (int i = 0; i < tabuleiro.getDimencao(); i++) {
+				tabuleiro.addPeca(j,i, novoCampo(j,i));
+
 			}
 		}
 		notificarMudancaTabuleiro();
 	}
 
+
+	public Peca novoCampo(int row, int col) {
+		
+		if ((row== col) & ((row == 0) ||(row== tabuleiro.getDimencao()- 1))
+				|| (row == 0) & (col == tabuleiro.getDimencao()- 1) || (col == 0) & (row== tabuleiro.getDimencao()- 1)) {
+			return new Refugio(row,col);
+		}else if ((row== col) & (col == tabuleiro.getDimencao()/ 2)) {
+			return new Trono(row,col);
+		}else {
+			return new Campo(row,col);
+		}
+		
+	}
+
+	
 	// atualizar a matriz tabuleiro com os jogadores
 	@Override
 	public void iniciarJogo() {
 
-		for (int j = 0; j < tabuleiro.length; j++) {
-			for (int i = 0; i < tabuleiro.length; i++) {
-				if (i == 3 || j == 3) {
-					if ((i == 0 || i == 1 || i == 5 || i == 6) || (j == 0 || j == 1 || j == 5 || j == 6)) {
-						this.tabuleiro[j][i] = new Mercenario();
-					} else if ((i == 2 || i == 4) || (j == 2 || j == 4)) {
-						this.tabuleiro[j][i] = new Defensor();
+		for (int j = 0; j < tabuleiro.getDimencao(); j++) {
+			for (int i = 0; i < tabuleiro.getDimencao(); i++) {
+				if (j == 3 || i == 3) {
+					if ((j == 0 || j == 1 || j == 5 || j == 6) || (i == 0 || i == 1 || i == 5 || i == 6)) {
+						this.tabuleiro.addPeca(j,i,new Mercenario(j,i));
+					} else if ((j == 2 || j == 4) || (i == 2 || i == 4)) {
+						this.tabuleiro.addPeca(j,i,new DefensorPeao(j,i));
 					}
-					if (i == j) {
-						this.tabuleiro[j][i] = new Rei();
-					}
+					if (j == i) {
+						this.tabuleiro.addPeca(j,i,new Rei(new DefensorPeao(j,i)));
+					} 
 
 				}
 			}
 		}
-		Jogada(new Defensor());
+		tabuleiro.accept(jogadorVisit);
+		jogadalist = jogadorVisit.getJogada();
 		notificarMudancaTabuleiro();
 	}
 
-	// salvar as possiveis jogadas da vez
-	public void Jogada(Peca peca) {
-		jogada.clear();
-		for (int j = 0; j < tabuleiro.length; j++) {
-			for (int i = 0; i < tabuleiro.length; i++) {
 
-				if (this.tabuleiro[j][i].getClass() == peca.getClass()
-						|| (this.tabuleiro[i][j].getClass().equals(Rei.class) && jogador.equals("Defensor"))) {
-					this.jogada.add(this.tabuleiro[j][i]);
-				}
-
-			}
-		}
-		//notificarMudancaTabuleiro();
-	}
-
-	// verificar as pecas do jogador da vez
-	public boolean Jogada(int row, int col) {
-		jogada.clear();
-		for (int i = col + 1; i < tabuleiro.length; i++) {
-			if (!(this.tabuleiro[row][i].getClass().equals(Campo.class))) {
-				break;
-			}
-			this.jogada.add(this.tabuleiro[row][i]);
-
-		}
-		for (int i = row + 1; i < tabuleiro.length; i++) {
-			if (!this.tabuleiro[i][col].getClass().equals(Campo.class)) {
-				break;
-			}
-			this.jogada.add(this.tabuleiro[i][col]);
-
-		}
-		for (int i = col - 1; i >= 0; i--) {
-			if (!(this.tabuleiro[row][i].getClass().equals(Campo.class))) {
-				break;
-			}
-			this.jogada.add(this.tabuleiro[row][i]);
-
-		}
-		for (int i = row - 1; i >= 0; i--) {
-			if (!this.tabuleiro[i][col].getClass().equals(Campo.class)) {
-				break;
-			}
-			this.jogada.add(this.tabuleiro[i][col]);
-
-		}
-
-		notificarMudancaTabuleiro();
-		System.out.println("lista" + jogada.isEmpty());
-		return jogada.isEmpty();
-
-	}
+	
+//	// verificar as pecas do jogador da vez
+//	public boolean Jogada(int row, int col) {
+//		jogada.clear();
+//		int l=1,o=1,n=1,s=1;
+//		do {
+//			if (col+l < tabuleiro.length && this.tabuleiro[row][col].possoIr(this.tabuleiro[row][col+l])) {
+//				this.jogada.add(this.tabuleiro[row][col+l]);
+//				l++;
+//			}else
+//			if (col-o >=0 &&this.tabuleiro[row][col].possoIr(this.tabuleiro[row][col-o])) {
+//				this.jogada.add(this.tabuleiro[row][col-o]);
+//				o++;
+//			}else
+//			if (row+n < tabuleiro.length && this.tabuleiro[row][col].possoIr(this.tabuleiro[row+n][col])) {
+//				this.jogada.add(this.tabuleiro[row+n][col]);
+//				n++;
+//			}else
+//			if (row-s>=0 && this.tabuleiro[row][col].possoIr(this.tabuleiro[row-s][col])) {
+//				this.jogada.add(this.tabuleiro[row-s][col]);
+//				s++;
+//			}else break;
+//		}
+//		while(true);
+//
+//		notificarMudancaTabuleiro();
+//		System.out.println("lista" + jogada.isEmpty());
+//		return jogada.isEmpty();
+//
+//	}
 
 	@Override
-	public Icon getPeca(int col, int row) {
+	public Icon getPeca(int row, int col) {
 
-		return (tabuleiro[col][row] == null ? null : tabuleiro[col][row].getImagem());
+		return (tabuleiro.getPeca(row, col) == null ? null : tabuleiro.getPeca(row, col) .getImagem());
 	}
 
 	@Override
 	public void click(MouseEvent e) {
 		System.out.println(e.getPoint());
+
 	}
-
-
 
 	private void notificarMudancaTabuleiro() {
 
@@ -149,73 +155,83 @@ public class ControleJogoImpl implements ControleJogo {
 			obs.mudouTabuleiro();
 
 	}
+	
 
-	private void notificarFimJogo(String msgErro) {
-		for (Observador obs : observadores)
-			obs.fimDeJogo(msgErro);
-	}
-
-	@Override
-	public int getDimencao() {
-		return dimencao;
-	}
+//	private void notificarFimJogo(String msgErro) {
+//		for (Observador obs : observadores)
+//			obs.fimDeJogo(msgErro);
+//	}
 
 	@Override
-	public void setDimencao(int dimencao) {
-		this.dimencao = dimencao;
-		
+	public Tabuleiro getTabuleiro() {
+		return tabuleiro;
 	}
 	@Override
-	public String getJogador() {
+	public Jogador getJogador() {
 		return jogador;
 	}
 
 	@Override
 	public void voltarJogada() {
-		this.inv.redo();
-		if (jogador.equals("Defensor")) {
-			jogador = "Mercenario";
-			Jogada(new Mercenario());
-		} else {
-			jogador = "Defensor";
-			Jogada(new Defensor());
-
+		if (this.inv.existe()) {
+			this.inv.undo();
+			jogador.pressionarBotao();
+			jogadorVisit.setSelec(jogador.getJogadorAtual().getVez());
+			tabuleiro.accept(jogadorVisit);
+			notificarMudancaTabuleiro();
 		}
-		notificarMudancaTabuleiro();
-		
+	}
+	@Override
+	public void refazerJogada() {
+		if (this.inv.existe()) {
+			this.inv.redo();
+			jogador.pressionarBotao();
+			jogadorVisit.setSelec(jogador.getJogadorAtual().getVez());
+			tabuleiro.accept(jogadorVisit);
+			notificarMudancaTabuleiro();
+		}
 	}
 
 	@Override
 	public void click(int row, int col) {
-		System.out.println(jogada.contains(tabuleiro[row][col]));
+	if (this.jogadalist.contains(tabuleiro.getPeca(row, col))) {
 
-		if (jogada.contains(tabuleiro[row][col])) {
-			if (!tabuleiro[row][col].getClass().equals(Campo.class)) {
-				lin = row;
-				coluna = col;
-				Peca aux = tabuleiro[row][col];
-				if (Jogada(row, col)) {
-					Jogada(aux);
-				}
-
-			} else {			
-				int a[] ={row,col};
-				int[] b= {lin,coluna};
-				inv.execute(new MovimentarPeca(tabuleiro,a,b));
-				inv.imprimir();
-					if (jogador.equals("Defensor")) {
-					this.jogador = "Mercenario";
-					Jogada(new Mercenario());
-				} else {
-					this.jogador = "Defensor";
-					Jogada(new Defensor());
-
-				}
+			if (tabuleiro.getSelecionada()==null) {
+				System.out.println("if 2");
+				tabuleiro.setSelecionada(tabuleiro.getPeca(row, col));			
+								
+					if (tabuleiro.accept(jogadaVisit)) {
+						tabuleiro.setSelecionada(null);
+						}else {
+							this.jogadalist = jogadaVisit.getJogada();
+							}			
+				} else {								
+					inv.execute(new MovimentarPeca(this.tabuleiro,row,col));
+					inv.imprimir();
+					jogador.pressionarBotao();
+					jogadorVisit.setSelec(jogador.getJogadorAtual().getVez());
+					
+					capturaVisit.setSelec(jogador.getJogadorAtual().getVez());//////
+					tabuleiro.setSelecionada(tabuleiro.getPeca(row, col));
+					tabuleiro.accept(capturaVisit);
+					System.out.println("delete:"+capturaVisit.getJogada().isEmpty());
+					jogadalist = capturaVisit.getJogada();	
+					/*chamar metodo  de escluir*/
+					if(jogadalist.isEmpty())
+					for(Peca x:jogadalist) {
+					System.out.println("delete row"+x.getRow()+"col"+x.getCol());
+					}
+					tabuleiro.accept(jogadorVisit);
+					jogadalist = jogadorVisit.getJogada();				
+					tabuleiro.setSelecionada(null);			
+					}
+	
 			}
-		}
 		notificarMudancaTabuleiro();
-		// TODO Auto-generated method stub
-
-	}
+		for(Peca x:jogadalist)
+			System.out.println("row"+x.getRow()+"col"+x.getCol());
+		}
+	
+	
 
 }

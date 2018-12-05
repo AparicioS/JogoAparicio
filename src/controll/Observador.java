@@ -7,6 +7,6 @@ public interface Observador {
 
 	void mudouTabuleiro();
 
-	void fimDeJogo(String msgErro);
+	//void fimDeJogo(String msgErro);
 
 }

@@ -1,17 +1,17 @@
 package model;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 
-/**
-*
-* @author aparicio da silva
-*/
-public class Defensor extends PecaJogador{
+public abstract class  Defensor extends PecaJogador   {
 
-	public Defensor() {
-		super(new ImageIcon("src/pecas/defensorb.png"));
-		// TODO Auto-generated constructor stub
+
+	public Defensor(String nomeImagem, int row, int col) {
+		super(nomeImagem,row,col);
+	}
+
+	public abstract boolean possoIr(Peca possicao);
+	
+	public boolean minhaVez(String vez) {
+		return vez.equals("Defensor");
 	}
 
 }

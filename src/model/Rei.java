@@ -1,17 +1,16 @@
 package model;
-
-import javax.swing.ImageIcon;
-
 /**
 *
 * @author aparicio da silva
 */
-
-public class Rei extends PecaJogador{
-
-	public Rei() {
-		super(new ImageIcon("src/pecas/reibt.png"));
-		// TODO Auto-generated constructor stub
+public class Rei extends DefensorDecorator  {
+	
+	public Rei(Defensor defensor) {
+		super(defensor,"Rei",defensor.getRow(),defensor.getCol());
+	}
+	@Override
+	public boolean possoIr(Peca possicao) {		
+		return (super.possoIr(possicao)||possicao.minhaVez("Refugio")||possicao.minhaVez("Trono"));
 	}
 
 }
